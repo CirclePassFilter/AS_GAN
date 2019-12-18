@@ -12,7 +12,6 @@ import torchvision.datasets as dset
 import torchvision.transforms as transforms
 import torchvision.utils as vutils
 import torch.autograd as ta
-#import inception_score as tfis
 from metric import make_dataset
 import numpy as np
 # from tensorboardX import SummaryWriter
@@ -125,7 +124,6 @@ if __name__ == '__main__':
     optimizerD = optim.Adam(netD.parameters(), lr=2e-4, betas=(opt.beta1, 0.999))
     optimizerG = optim.Adam(netG.parameters(), lr=2e-4, betas=(opt.beta1, 0.999))
 
-    # [emd-mmd-knn(knn,real,fake,precision,recall)]*4 - IS - mode_score - FID
     score_tr = np.zeros((opt.niter, 4*7+3))
     incep = np.zeros((opt.niter+1, 2))
     fid = np.zeros((opt.niter+1, 1))
@@ -161,23 +159,20 @@ if __name__ == '__main__':
             print('fake',result.shape)
             np.save(save_path,result)
 
-
-
-
     def check_folder(log_dir):
         if not os.path.exists(log_dir):
             os.makedirs(log_dir)
         return log_dir
 
     sample_True(opt.outf+'/real.npy',None,350,dataloader)
-    for epoch in range(opt.niter):   ################################################
+    for epoch in range(opt.niter):  
         #sample_fake(opt.outf+'/epoch_{}.npy'.format(epoch),64,350)
         for i, data in enumerate(dataloader, 0):
 
             ############################
-            # (1) Update D network: maximize log(D(x)) + log(1 - D(G(z)))
+            # (1) Update D network: 
             ###########################
-            # train with real
+
             netD.zero_grad()
             real_cpu = data[0].cuda()
             real_cpu = real_cpu.requires_grad_(True)
@@ -201,7 +196,7 @@ if __name__ == '__main__':
 
             x_adv = x_adv.detach()
 
-            # train with fake
+
             errD=torch.zeros(1).cuda()
             D_G_z1 = torch.zeros(1).cuda()
             noise = torch.randn(batch_size, nz, 1, 1).cuda()
@@ -235,12 +230,12 @@ if __name__ == '__main__':
 
 
             ############################
-            # (2) Update G network: maximize log(D(G(z)))
+            # (2) Update G network: 
             ###########################
             netG.zero_grad()
             noise = torch.randn(batch_size, nz, 1, 1).cuda()
             fake = netG(noise)
-            label.fill_(real_label)  # fake labels are real for generator cost
+            label.fill_(real_label)  
             output = netD(fake)
             errG = criterion(output, label)
             errG.backward()
