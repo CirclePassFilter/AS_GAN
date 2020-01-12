@@ -184,11 +184,15 @@ if __name__ == '__main__':
             errD_real = criterion(output, label)
             errD_real.backward()
             D_x = output.mean().item()
+            
+            
+            ################################################
+            # training with adversarial samples of real data 
+            ################################################
+            
+            
             Grad_Dr = real_cpu.grad
-            # def get_pert(errD_real):
-            #     pert=0.6-min(errD_real,0.6)
-            #     return pert*2.5
-            if(i<=300):
+            if(epoch<1):
                 p=0
             else:
                 p=1
