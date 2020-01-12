@@ -192,7 +192,7 @@ if __name__ == '__main__':
             
             
             Grad_Dr = real_cpu.grad
-            if(epoch<1):
+            if(i<300):
                 p=0
             else:
                 p=1
